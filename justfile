@@ -3,6 +3,11 @@ build:
    arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=hard -mthumb -ffreestanding -nostdlib -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables -Wl,-Tlink/v5.ld -o out/output.elf src/*.S
    @echo "Stripping..."
    arm-none-eabi-objcopy out/output.elf --gap-fill 0x00 -O binary out/output.bin
+clean:
+   @echo "Cleaning..."
+   rm -rf out
+   mkdir out
+
 
 upload slot='1' action='none':
    @just build
