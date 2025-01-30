@@ -1,5 +1,11 @@
 .section .text, "ax"
-.global vexDisplayRectFill, vexControllerGet, vexTasksRun, vexDeviceMotorVoltageSet, vexDeviceGetByIndex
+.global \
+    vexDisplayRectFill, \
+    vexControllerGet, \
+    vexTasksRun, \
+    vexDeviceMotorVoltageSet, \
+    vexDeviceGetByIndex, \
+    vexSerialWriteChar
 
 @ All of these function should just forward to the real function in the jumptable
 
@@ -24,7 +30,7 @@ vexControllerGet:
     pop {r12}
     bx r12
 
-@ void vexDeviceGetByIndex(uint index) -> void*
+@ vexDeviceGetByIndex(uint index) -> void*
 @ found at 0x37fc19c
 vexDeviceGetByIndex:
     push {lr}
@@ -52,6 +58,18 @@ vexTasksRun:
     push {lr}
 
     ldr r12, =0x37fc05c
+    ldr r12, [r12]
+    blx r12
+
+    pop {r12}
+    bx r12
+
+@ vexSerialWriteChar(uint channel, uchar c) -> int
+@ Found at 0x37fc898
+vexSerialWriteChar:
+    push {lr}
+
+    ldr r12, =0x37fc898
     ldr r12, [r12]
     blx r12
 

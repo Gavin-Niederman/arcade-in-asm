@@ -3,7 +3,9 @@
     main, \
     vexDisplayRectFill, \
     vexControllerGet, \
-    vexTasksRun,
+    vexTasksRun, \
+    vexSerialWriteChar, \
+    __aebi_idiv
 
 @ Takes controller input and converts it to left and right motor speeds
 @ args: r0=x, r1=y
@@ -22,22 +24,45 @@ arcade_drive:
 @ args: r0=left, r1=right
 visualize_speeds:
     push {lr}
+    push {r1}
 
-    add r0, r0, #100
-    add r1, r1, #100
-
-    @ Call vexDisplayRectFill with (25, 25, 50, left speed)
-    mov r0, #25
-    mov r1, #32
-    mov r2, #50
+1:  cmp r0, #0
+    
+    @ save the val
     mov r3, r0
-    bl vexDisplayRectFill
-    @ Call vexDisplayRectFill with (75, 25, 100, right speed)
-    mov r0, #75
+
+    @ divide by 10
+    mov r1, #10
+    bl __aebi_idiv
+
+    mov r4, #10
+    @ get the truncated value
+    mul r1, r0, r4
+    @ find the remainder
+    sub r1, r0, r1
+
+    add r1, r1, #48
+    @ call vexSerialWriteChar with (1, rem + 48 (0))
+    mov r0, #1
+    bl vexSerialWriteChar
+
+    mov r0, r3
+
+    beq 1b
+
+    @ Print space 
+    mov r0, #1
     mov r1, #32
-    mov r2, #100
-    mov r3, r1
-    bl vexDisplayRectFill
+    bl vexSerialWriteChar
+
+    @ Print the other number
+    pop {r0}
+    b 1b
+
+    @ Print newline
+    mov r0, #1
+    mov r1, #10
+    bl vexSerialWriteChar
 
     pop {r12}
     bx r12
