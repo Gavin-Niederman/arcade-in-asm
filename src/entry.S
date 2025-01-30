@@ -1,4 +1,4 @@
-.section boot, "ax"
+.section .boot, "ax"
 .global \
     _boot, \
     __stack_top, \
@@ -6,6 +6,18 @@
 
 _boot:
     ldr sp, =__stack_top
-    ldr r12, =main
-    bx r12
-    
+    b main
+    bx lr
+
+.section .code_signature, "a"
+.global CODE_SIGNATURE
+
+CODE_SIGNATURE:
+    @ XVX5
+    .word 0x35585658
+    .word 0
+    .word 2
+    .word 0
+    .word 0
+    .word 0
+    .word 0

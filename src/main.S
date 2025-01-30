@@ -3,8 +3,7 @@
     main, \
     vexDisplayRectFill, \
     vexControllerGet, \
-    vexTasksRun, \
-    arcade_drive,
+    vexTasksRun,
 
 @ Takes controller input and converts it to left and right motor speeds
 @ args: r0=x, r1=y
@@ -14,12 +13,40 @@ arcade_drive:
     add r2, r0, r1
     @ right
     sub r3, r0, r1
+
     mov r0, r2
     mov r1, r3
+
     bx lr
 
+@ Takes wheel speeds and displays it on the screen
+@ args: r0=left, r1=right
+visualize_speeds:
+    push {lr}
+
+    mov r3, #25
+    add r0, r0, r3
+    add r1, r1, r3
+
+    @ Call vexDisplayRectFill with (25, 25, 50, left speed)
+    mov r0, #25
+    mov r1, #25
+    mov r2, #50
+    mov r3, r0
+    bl vexDisplayRectFill
+    @ Call vexDisplayRectFill with (75, 25, 100, right speed)
+    mov r0, #75
+    mov r1, #25
+    mov r2, #100
+    mov r3, r1
+    bl vexDisplayRectFill
+
+    pop {r12}
+    bx r12
+
+
 main:
-    @ Call vexDisplayRectFill with (0, 0, 100, 100)
+    @ Call vexDisplayRectFill with (75, 25, 100, right speed)
     mov r0, #0
     mov r1, #0
     mov r2, #100
@@ -54,9 +81,11 @@ main:
     mov r1, r5
     bl arcade_drive
     mov r8, r0
+    mov r9, r1
+    bl visualize_speeds
 
     @ Call vexDeviceMotorVoltageSet with r6, r0
-    mov r1, r0
+    mov r1, r9
     mov r0, r6
     bl vexDeviceMotorVoltageSet
     @ Call vexDeviceMotorVoltageSet with r7, r8
