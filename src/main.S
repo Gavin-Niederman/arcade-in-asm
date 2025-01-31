@@ -5,15 +5,18 @@
     vexControllerGet, \
     vexTasksRun, \
     vexSerialWriteChar, \
-    __aebi_idiv
+    __aeabi_idiv
 
 @ Takes controller input and converts it to left and right motor speeds
 @ args: r0=x, r1=y
 @ returns: r0=left, r1=right
 arcade_drive:
     mov r12, #1000
-    mla r2, r0, r12, r1
-    mls r3, r1, r12, r1
+    add r2, r1, r0
+    sub r3, r1, r0
+
+    mul r2, r12
+    mul r3, r12
 
     mov r0, r2
     mov r1, r3
@@ -26,14 +29,27 @@ visualize_speeds:
     push {lr}
     push {r1}
 
+    @ store loop count
+    mov r12, #0
+    push {r12}
+
+    cmp r0, #0
+    bxeq lr
+    cmp r1, #0
+    bxeq lr
+
 1:  cmp r0, #0
     
+    pop {r12}
+    add r12, r12, #1
+    push {r12}
+
     @ save the val
     mov r3, r0
 
     @ divide by 10
     mov r1, #10
-    bl __aebi_idiv
+    bl __aeabi_idiv
 
     mov r4, #10
     @ get the truncated value
@@ -56,8 +72,10 @@ visualize_speeds:
     bl vexSerialWriteChar
 
     @ Print the other number
+    pop {r12}
     pop {r0}
-    b 1b
+    cmp r12, #1
+    beq 1b
 
     @ Print newline
     mov r0, #1
@@ -100,13 +118,13 @@ main:
     @ save the result in r5
     mov r5, r0
 
-    @ Call arcade_drive with r4, r5
-    mov r0, r4
-    mov r1, r5
+    @ Call arcade_drive with r5, r4
+    mov r0, r5
+    mov r1, r4
     bl arcade_drive
     mov r8, r0
     mov r9, r1
-    bl visualize_speeds
+    @ bl visualize_speeds
 
     @ Call vexDeviceMotorVoltageSet with r6, r9
     mov r0, r6
