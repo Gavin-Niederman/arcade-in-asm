@@ -11,7 +11,18 @@
 @ args: r0=x, r1=y
 @ returns: r0=left, r1=right
 arcade_drive:
-    mov r12, #1000
+    push {lr}
+    push {r0, r1}
+    
+    @ calculate ratio of controller range to motor range (127 -> 12000)
+    mov r0, #12000
+    mov r1, #127
+
+    bl __aeabi_idiv
+    mov r12, r0
+
+    pop {r0, r1}
+
     add r2, r1, r0
     sub r3, r1, r0
 
@@ -21,7 +32,8 @@ arcade_drive:
     mov r0, r2
     mov r1, r3
 
-    bx lr
+    pop {r12}
+    bx r12
 
 @ Takes wheel speeds and displays it on the screen
 @ args: r0=left, r1=right
