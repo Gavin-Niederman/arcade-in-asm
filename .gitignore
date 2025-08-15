@@ -1,2 +1,7 @@
 /out
 /.direnv
+.envrc
+armv7a-vex-v5.json
+flake.lock
+flake.nix
+justfile

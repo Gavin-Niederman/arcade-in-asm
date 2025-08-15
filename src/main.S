@@ -5,7 +5,7 @@
     vexControllerGet, \
     vexTasksRun, \
     vexSerialWriteChar, \
-    __aeabi_idiv
+    divsi3
 
 @ Takes controller input and converts it to left and right motor speeds
 @ args: r0=x, r1=y
@@ -18,7 +18,7 @@ arcade_drive:
     mov r0, #12000
     mov r1, #127
 
-    bl __aeabi_idiv
+    bl divsi3
     mov r12, r0
 
     pop {r0, r1}
